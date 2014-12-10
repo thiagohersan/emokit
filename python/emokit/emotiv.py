@@ -358,7 +358,7 @@ class Emotiv(object):
     """
     Receives, decrypts and stores packets received from Emotiv Headsets.
     """
-    def __init__(self, display_output=True, serial_number="", is_research=False):
+    def __init__(self, display_output=True, serial_number="", is_research=False, vendor_id=0x21a1, product_id=0x0001):
         """
         Sets up initial values.
         """
@@ -389,6 +389,8 @@ class Emotiv(object):
             'Unknown': {'value': 0, 'quality': 0}
         }
         self.serial_number = serial_number  # You will need to set this manually for OS X.
+        self.vendor_id = vendor_id
+        self.product_id = product_id
         self.old_model = False
 
     def setup(self):
@@ -506,13 +508,10 @@ class Emotiv(object):
         _os_decryption = False
         # Change these values to the hex equivalent from the output of hid_enumerate. If they are incorrect.
         # Current values = VendorID: 8609 ProductID: 1
-        hidraw = hid.device(0x21a1, 0x0001)
-        if not hidraw:
-            hidraw = hid.device(0x21a1, 0x1234)
-        if not hidraw:
-            hidraw = hid.device(0xed02, 0x1234)
-        if not hidraw:
-            print "Device not found. Uncomment the code in setup_darwin and modify hid.device(vendor_id, product_id)"
+        try:
+            hidraw = hid.device(self.vendor_id, self.product_id)
+        except IOError:
+            print "You need to specify correct ProductID and VendorID in __init__()"
             raise ValueError
         if self.serial_number == "":
             print "Serial number needs to be specified manually in __init__()."

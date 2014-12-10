@@ -8,7 +8,7 @@ if platform.system() == "Windows":
 import gevent
 
 if __name__ == "__main__":
-    headset = Emotiv()
+    headset = Emotiv(serial_number="SN201405", vendor_id=0x21a1, product_id=0x0001)
     gevent.spawn(headset.setup)
     gevent.sleep(0)
     try:
